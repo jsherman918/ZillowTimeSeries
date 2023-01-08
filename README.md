@@ -82,4 +82,4 @@ The best investment for a longer time horizon is Santa Clara County in Californi
 4. 64870 in Jasper Country, Missouri
 5. 79934 in El Paso, Texas
 
-
+Our forecast model shows a short term price dip followed by a steady trend up over the next three years.
