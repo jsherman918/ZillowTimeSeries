@@ -1,72 +1,63 @@
 
-# Mod 4 Project - Starter Notebook
+# Zillow Time Series Analysis
 
-This notebook has been provided to you so that you can make use of the following starter code to help with the trickier parts of preprocessing the Zillow dataset. 
-
-The notebook contains a rough outline the general order you'll likely want to take in this project. You'll notice that most of the areas are left blank. This is so that it's more obvious exactly when you should make use of the starter code provided for preprocessing. 
-
-**_NOTE:_** The number of empty cells are not meant to infer how much or how little code should be involved in any given step--we've just provided a few for your convenience. Add, delete, and change things around in this notebook as needed!
-
-# Some Notes Before Starting
-
-This project will be one of the more challenging projects you complete in this program. This is because working with Time Series data is a bit different than working with regular datasets. In order to make this a bit less frustrating and help you understand what you need to do (and when you need to do it), we'll quickly review the dataset formats that you'll encounter in this project. 
-
-## Wide Format vs Long Format
-
-If you take a look at the format of the data in `zillow_data.csv`, you'll notice that the actual Time Series values are stored as separate columns. Here's a sample: 
-
-<img src='../images/df_head.png'>
-
-You'll notice that the first seven columns look like any other dataset you're used to working with. However, column 8 refers to the median housing sales values for April 1996, column 9 for May 1996, and so on. This This is called **_Wide Format_**, and it makes the dataframe intuitive and easy to read. However, there are problems with this format when it comes to actually learning from the data, because the data only makes sense if you know the name of the column that the data can be found it. Since column names are metadata, our algorithms will miss out on what dates each value is for. This means that before we pass this data to our ARIMA model, we'll need to reshape our dataset to **_Long Format_**. Reshaped into long format, the dataframe above would now look like:
-
-<img src='../images/melted1.png'>
-
-There are now many more rows in this dataset--one for each unique time and zipcode combination in the data! Once our dataset is in this format, we'll be able to train an ARIMA model on it. The method used to convert from Wide to Long is `pd.melt()`, and it is common to refer to our dataset as 'melted' after the transition to denote that it is in long format. 
-
-# Helper Functions Provided
-
-Melting a dataset can be tricky if you've never done it before, so you'll see that we have provided a sample function, `melt_data()`, to help you with this step below. Also provided is:
-
-* `get_datetimes()`, a function to deal with converting the column values for datetimes as a pandas series of datetime objects
-* Some good parameters for matplotlib to help make your visualizations more readable. 
-
-Good luck!
+## Business Understanding
 
 
-# Step 1: Load the Data/Filtering for Chosen Zipcodes
+A client broker is looking advise his clients as to where they should invest in residential real estate.  They want to buy in the US but are agnostic as to where.  
 
-# Step 2: Data Preprocessing
+The clients are looking for an understanding of past performance for both long and short term time horizons (3 year ROI and 10 year ROI) as well as gaging volatility in each local market place (represented by the coefficient of variance).  They also want to see forward looking modeling projections.
 
-
-```python
-def get_datetimes(df):
-    return pd.to_datetime(df.columns.values[1:], format='%Y-%m')
-```
-
-# Step 3: EDA and Visualization
+1. What has shown the best long term appreciation?
+2. What has shown the best short term appreciation?
+3. What location has the least amount of risk investing?
+4. Can future median house prices in a location be predicted and what are the projections?
+5. Where do we recomend investing?
 
 
-```python
-font = {'family' : 'normal',
-        'weight' : 'bold',
-        'size'   : 22}
+## Objective
 
-matplotlib.rc('font', **font)
+Conduct a time series analysis to predict the five best locations to invest in based on ROI.
 
-# NOTE: if you visualizations are too cluttered to read, try calling 'plt.gcf().autofmt_xdate()'!
-```
+## Methods
 
-# Step 4: Reshape from Wide to Long Format
+ROI Equations:
+df['ROI3'] = (df['2018-04']/ df['2015-04'])-1
+df['ROI10']= (df['2018-04']/ df['2008-04'])-1
 
+CV: Standard Deviation / Mean for both 3 and 10 year time horizons.
 
-```python
-def melt_data(df):
-    melted = pd.melt(df, id_vars=['RegionName', 'City', 'State', 'Metro', 'CountyName'], var_name='time')
-    melted['time'] = pd.to_datetime(melted['time'], infer_datetime_format=True)
-    melted = melted.dropna(subset=['value'])
-    return melted.groupby('time').aggregate({'value':'mean'})
-```
+## EDA
 
-# Step 5: ARIMA Modeling
+## Modeling
 
-# Step 6: Interpreting Results
+## Findings
+
+10 of the top 50 zipcodes with the highest 10 year ROI were in Santa Clara County.  The average ROI over 10 years was 88% in Santa Clara county as compared to 13% on average over the same period nationwide.
+
+4 of the top 5 counties with the most top 50 '3 year ROI' zipcodes are in Florida.  The average 3 year ROI in Florida is 36% as compared to the 21% national average.
+
+The best investment for a longer time horizon is Santa Clara County in California.  For investors more interested in short term flips, the state of Florida and specifically Brevard, Volusia, Polk, and Duval counties.
+
+5 zipcodes with the highest 10 year ROI: 
+
+1. 02116 in Boston, MA
+2. 03215 in Waterville Valley, New Hampshire
+3. 94574 in St. Helena, CA
+4. 96752 in Kauai County, Hawaii
+5. 96722 in Kaui County, Hawaii
+
+5 zipcodes with highest 3 year ROI:
+1. 2790 in northeastern North Carolina
+2. 30032 in Dekalb County, Georgia
+3. 19134 in Philadelphia, PA
+4. 28208 in Charlotte, North Carolina
+5. 33705 in St. Petersberg, Florida
+
+5 zipcodes with lowest 10 year CV:
+1. 64836 in Jasper County, Missouri
+2. 16508 in Erie, PA
+3. 64801 in Jasper County, Missouri
+4. 64870 in Jasper Country, Missouri
+5. 79934 in El Paso, Texas
+
